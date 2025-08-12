@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    container_name: auth-api
+    ports:
+      - "5000:5000"
+    environment:
+      # iguais ao seu .flaskenv / config.py
+      FLASK_APP: wsgi.py
+      FLASK_DEBUG: "1"
+      SECRET_KEY: dev-secret
+      JWT_SECRET_KEY: dev-jwt-secret
+      DATABASE_URL: sqlite:////data/app.db
+    volumes:
+      - ./:/app
+      - sqlite_data:/data
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
