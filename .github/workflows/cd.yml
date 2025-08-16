@@ -8,37 +8,16 @@ on:
       - "config.py"
       - "requirements.txt"
       - "Dockerfile"
-      - "docker/**"
+      - "docker-compose.yml"
       - ".github/workflows/**"
 
 jobs:
-  build-push-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    env:
-      IMAGE_NAME: ghcr.io/${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build & Push Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Deploy via SSH
+      - name: Deploy via SSH (git pull + compose up --build)
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -49,8 +28,28 @@ jobs:
           script: |
             set -e
             cd ${{ secrets.APP_DIR }}
-            sed -i "s|ghcr.io/.*/.*:.*|${{ env.IMAGE_NAME }}:latest|g" docker-compose.yml || true
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker compose pull
-            docker compose up -d
+
+            # 1) obter última versão do código
+            if [ ! -d .git ]; then
+              git clone ${{ secrets.GIT_REMOTE_URL }} .    # primeira vez (se precisar)
+            fi
+            git fetch --all --prune
+            git reset --hard origin/main
+
+            # 2) garantir .env.prod (se já existir, pula)
+            if [ ! -f .env.prod ]; then
+              cat > .env.prod <<'EOF'
+              SECRET_KEY=${{ secrets.SECRET_KEY }}
+              JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+              EOF
+              chmod 600 .env.prod
+            fi
+
+            # 3) build com cache local e subida sem interromper
+            docker compose --env-file .env.prod up -d --build --remove-orphans
+
+            # 4) limpeza opcional de imagens não usadas
             docker system prune -f
+
+            # 5) checar status/saúde (opcional)
+            docker compose ps

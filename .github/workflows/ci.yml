@@ -24,4 +24,4 @@ jobs:
         run: ruff check .
 
       - name: Docker build (no push)
-        run: docker build -t my_api:ci .
+        run: docker build -t auth-api:ci .
