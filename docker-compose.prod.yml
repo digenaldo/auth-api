@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile   # usa o Dockerfile de produção
+    container_name: auth-api
+    ports:
+      - "5000:5000"            # se usar proxy (Caddy/Nginx), pode remover
+    environment:
+      FLASK_ENV: production
+      FLASK_APP: wsgi.py
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      DATABASE_URL: sqlite:////data/app.db
+    volumes:
+      - sqlite_data:/data      # persiste o SQLite no host
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
