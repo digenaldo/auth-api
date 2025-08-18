@@ -2,3 +2,7 @@
     encode gzip
     reverse_proxy api:5000
 }
+
+:80 {
+    redir https://{$DOMAIN}{uri} 308
+}
