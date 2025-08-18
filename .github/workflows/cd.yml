@@ -41,6 +41,7 @@ jobs:
               cat > .env.prod <<'EOF'
               SECRET_KEY=${{ secrets.SECRET_KEY }}
               JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+              DOMAIN=${{ secrets.DOMAIN }}
               EOF
               chmod 600 .env.prod
             fi
