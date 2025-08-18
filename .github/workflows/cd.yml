@@ -31,7 +31,7 @@ jobs:
 
             # 1) obter última versão do código
             if [ ! -d .git ]; then
-              git clone ${{ secrets.GIT_REMOTE_URL }} .    # primeira vez (se precisar)
+              git clone ${{ secrets.GIT_REMOTE_URL }} .
             fi
             git fetch --all --prune
             git reset --hard origin/main
