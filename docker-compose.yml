@@ -12,6 +12,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       DATABASE_URL: sqlite:////data/app.db
+      API_KEYS: ${API_KEYS}
     volumes:
       - sqlite_data:/data
     restart: unless-stopped

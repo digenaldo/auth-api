@@ -12,6 +12,7 @@ services:
       FLASK_DEBUG: "1"
       SECRET_KEY: dev-secret
       JWT_SECRET_KEY: dev-jwt-secret
+      API_KEYS: bEm+Lhu9h5s/sJjfehhIFLDdwT5ldc5ofZrxm90N4IE=
       DATABASE_URL: sqlite:////data/app.db
     volumes:
       - ./:/app

@@ -10,3 +10,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_TOKEN_LOCATION = ["headers"]
     JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24  # 24h
+    API_KEYS = set(k.strip() for k in os.environ.get("API_KEYS", "dev-key").split(","))
+    API_KEY_HEADER = os.environ.get("API_KEY_HEADER", "X-API-Key")
