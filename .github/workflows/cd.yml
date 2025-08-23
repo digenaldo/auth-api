@@ -27,7 +27,9 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd ${{ secrets.APP_DIR }}
+            APP_DIR=${{ secrets.APP_DIR }}
+            [ -d "$APP_DIR" ] || mkdir -p "$APP_DIR"
+            cd "$APP_DIR"
 
             # 1) obter última versão do código
             if [ ! -d .git ]; then
