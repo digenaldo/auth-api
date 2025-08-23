@@ -1,0 +1,9 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4          # versão estável no momento
+    hooks:
+      - id: gitleaks
+        name: gitleaks (protect staged secrets)
+        # protege o que vai ser commitado (staged); redige achados nos logs
+        args: ["protect", "--staged", "--redact", "--no-banner"]
